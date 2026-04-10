@@ -19,7 +19,7 @@ project pSix "Web Game"  2025-12-15 +5m {
   # the project reports. If not specified, the current day will be
   # used, but this will likely be outside of the project range, so it
   # can't be seen in the reports.
-  now 2026-02-25-13:00
+  now 2026-04-10-17:00 # TAREA 3
   # The currency for all money values is the US Dollar.
   currency "EUR"
 
@@ -67,6 +67,10 @@ resource dev2 "Samantha Müller" {
 }
 resource dev3 "Peter Green" {
   email "kkk@unizar.es"
+}
+resource nico "Nicolás de Rivas" { # TAREA 5
+  email "843740@unizar.es"
+  workinghours mon - sun 8:00 - 12:00 # Entiendo que todos los días no son solo los laborables
 }
 
 # Now we specify the work packages. The whole project is described as
@@ -147,14 +151,57 @@ task WMGame "Web & Mobile Game" {
     }    
   }
 
+  # TAREA 1
+  task tmobF "Mobile Front End" {
+    purge chargeset
+    chargeset mFront
+    responsible dev1
+    depends WMGame.tback.tBEd
+    
+    task tMobGUId "Mobile GUI Design" {
+      effort 7d
+      allocate nico # TAREA 5 Me adjudico esto :)
+      journalentry 2026-04-10 "Entrada práctica" {  # TAREA 3
+        author boss
+        alert green
+        summary "Nicolás de Rivas Morillo práctica 5 2026-04-10"
+      }
+    }
+    task tMobDev "Mobile App Development" {
+      effort 15d
+      allocate dev1, nico # TAREA 5 Me adjudico esto con ayuda
+      depends WMGame.tmobF.tMobGUId
+    }
+  }
+
+  task tcloud "Cloud Deployment" {
+    purge chargeset
+    chargeset back
+    responsible boss
+    depends WMGame.tback.tlogic
+    
+    task tEval "Cloud Evaluation and Decision" {
+      effort 3d
+      allocate boss
+    }
+    task tDeploy "Cloud Deployment" {
+      effort 5d
+      allocate dev1
+      depends WMGame.tcloud.tEval
+    }
+  }
+
   task ttest "Acceptance tests" {
       effort 10d
       allocate boss
       allocate dev2
       actual:effort 20d
+      minstart 2026-05-15 # TAREA 2
       depends WMGame.twebF
+      depends WMGame.tmobF
       depends WMGame.tback
-      }
+      depends WMGame.tcloud
+  }
 
     
   task deliveries "Milestones" {
@@ -270,6 +317,21 @@ taskreport overview "" {
   caption 'All effort values are in man days.'
 }
 
+# TAREA 4
+taskreport inicial "" {
+  scenarios plan
+  headline "Initial Project Plan"
+  columns bsi { title 'WBS' },
+          name, start, end, effort, cost,
+          revenue, chart { ${TaskTip} }
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%a %Y-%m-%d"
+  loadunit days
+  hideresource @all
+  balance cost rev
+  caption 'All effort values are in man days.'
+}
 
 # Macro to set the background color of a cell according to the alert
 # level of the task.
