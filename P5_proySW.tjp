@@ -151,7 +151,7 @@ task WMGame "Web & Mobile Game" {
     }    
   }
 
-  # TAREA 1
+  # TAREA 1 nuevas tasks
   task tmobF "Mobile Front End" {
     purge chargeset
     chargeset mFront
